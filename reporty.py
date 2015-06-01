@@ -4,6 +4,7 @@
 import json
 from time import sleep
 
+from pprint import pprint
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
@@ -27,10 +28,10 @@ def load_settings_from_json():
         return settings
 
 # Waits set amount of time until element is visible
-def wait_until_element_available(driver, id, timeout):
+def wait_until_element_available(driver, timeout, selectortype, selector):
     try:
         element = WebDriverWait(driver, timeout).until(
-            EC.presence_of_element_located((By.ID, id))
+            EC.presence_of_element_located((selectortype, selector))
         )
     finally:
         return
@@ -45,7 +46,7 @@ def check_if_element_available(driver, class_name):
 
 # Logs in to Reportronic...
 def login_to_reportronic(username, password, driver):
-    wait_until_element_available(driver, "chkLDAPTunnistus", 5)
+    wait_until_element_available(driver, 10, By.ID, 'chkLDAPTunnistus')
     driver.find_element_by_id('chkLDAPTunnistus').click()
     driver.find_element_by_id('itxtUserID').send_keys(username)
     driver.find_element_by_id('itxtPassword').send_keys(password)
@@ -54,8 +55,19 @@ def login_to_reportronic(username, password, driver):
     errorMsg = check_if_element_available(driver, 'SBErrorText')
     if errorMsg is not None:
         print "Login failed... " + errorMsg.text
+        exit(1)
 
+def go_to_worktimes(driver):
+    driver.find_element_by_class_name('uiMenuWork').click()
+    wait_until_element_available(driver, 10, By.ID, 'prlWTEP_uwtWorkTime__ctl0_rlbLisaaTyoaika')
+    driver.find_element_by_id('prlWTEP_uwtWorkTime__ctl0_rlbLisaaTyoaika').click()
 
+def get_worktime_cells(driver, projectname, date=None):
+    selector = ".WTGCellWrapper input[title*='{projectname}']".format(projectname=projectname)
+    if date is not None:
+        selector += "[title*='{date}']".format(date=date)
+    print selector
+    return driver.find_elements_by_css_selector(selector)
 
 # Load settings, create webdriver, login to reportronic...
 def main():
@@ -64,6 +76,10 @@ def main():
 
     driver.get(settings['url'])
     login_to_reportronic(settings['username'], settings['password'], driver)
+    go_to_worktimes(driver)
+    wait_until_element_available(driver, 10, By.CLASS_NAME, 'WTGCellWrapper')
 
+    test = get_worktime_cells(driver, 'JAMK', date='01.06.2015')
+    print len(test)
 if __name__ == '__main__':
     main()
