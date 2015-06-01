@@ -3,13 +3,13 @@
 
 import json
 from time import sleep
-
-from pprint import pprint
+import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import  WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+import click
 
 from selenium.webdriver.common.keys import Keys
 __author__ = 'matti'
@@ -77,8 +77,13 @@ def input_worktime(driver, element, duration, description):
     driver.find_element_by_name('prlWTEP$uwtWorkTime$_ctl1$ctlMnth$ctlWorkTimeTaskAtlasEditForm1$txtDescription').send_keys(description)
     driver.execute_script("__doPostBack('prlWTEP$uwtWorkTime$_ctl1$ctlMnth$ctlWorkTimeTaskAtlasEditForm1$rlbSave','') ")
 
-# Load settings, create webdriver, login to reportronic...
-def main():
+@click.command()
+@click.option('--date', default=time.strftime("%d.%m.%Y"), help='Work date. Default is today')
+@click.option('--desc', default=None, help='Work description.')
+@click.option('--hours', default=None, help='Working hours.', type=click.FLOAT)
+def main(date, desc, hours):
+    """Command line tool for interacting with Reportronic"""
+
     settings = load_settings_from_json()
     driver = init_driver()
 
@@ -87,9 +92,8 @@ def main():
     go_to_worktimes(driver)
     wait_until_element_available(driver, 10, By.CLASS_NAME, 'WTGCellWrapper')
 
-    test = get_worktime_cells(driver, 'JAMK', date='01.06.2015')
-    print len(test)
-    input_worktime(driver, test[0], "7.5", "asdsaddsa")
+    test = get_worktime_cells(driver, 'JAMK', date=date)
+    input_worktime(driver, test[0], hours, desc)
 
 if __name__ == '__main__':
     main()
