@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+__author__ = 'matti'
 
 import json
 from time import sleep
@@ -10,14 +11,12 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import  WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import click
-
 from selenium.webdriver.common.keys import Keys
-__author__ = 'matti'
 
 
 # Initialize webdriver
 def init_driver():
-    driver = webdriver.Firefox()
+    driver = webdriver.PhantomJS()
     driver.set_window_size(1024, 768)
     return driver
 
@@ -93,7 +92,7 @@ def main(date, desc, hours):
     wait_until_element_available(driver, 10, By.CLASS_NAME, 'WTGCellWrapper')
 
     test = get_worktime_cells(driver, 'JAMK', date=date)
-    input_worktime(driver, test[0], hours, desc)
-
+    input_worktime(driver, test[0], str(hours), desc)
+    driver.close()
 if __name__ == '__main__':
     main()
