@@ -25,5 +25,4 @@ So for example:
 python reporty.py --desc 'Fix bugs, write documentation' --hours 7.25
 
 ```
-
 Remember to set your username and password in config.json...
