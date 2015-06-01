@@ -1,5 +1,5 @@
 # Reporty
-Command line tool for interacting with Reportronic
+Command line tool for logging work with the Reportronic project management software
 
 ## INSTALLATION
 ```
