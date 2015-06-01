@@ -66,8 +66,16 @@ def get_worktime_cells(driver, projectname, date=None):
     selector = ".WTGCellWrapper input[title*='{projectname}']".format(projectname=projectname)
     if date is not None:
         selector += "[title*='{date}']".format(date=date)
-    print selector
     return driver.find_elements_by_css_selector(selector)
+
+def input_worktime(driver, element, duration, description):
+    element.click()
+    wait_until_element_available(driver, 10, By.NAME, 'prlWTEP$uwtWorkTime$_ctl1$ctlMnth$ctlWorkTimeTaskAtlasEditForm1$txtHours')
+    driver.find_element_by_name('prlWTEP$uwtWorkTime$_ctl1$ctlMnth$ctlWorkTimeTaskAtlasEditForm1$txtHours').send_keys(duration)
+    wait_until_element_available(driver, 10, By.NAME, 'prlWTEP$uwtWorkTime$_ctl1$ctlMnth$ctlWorkTimeTaskAtlasEditForm1$txtDescription')
+    sleep(0.2)
+    driver.find_element_by_name('prlWTEP$uwtWorkTime$_ctl1$ctlMnth$ctlWorkTimeTaskAtlasEditForm1$txtDescription').send_keys(description)
+    driver.execute_script("__doPostBack('prlWTEP$uwtWorkTime$_ctl1$ctlMnth$ctlWorkTimeTaskAtlasEditForm1$rlbSave','') ")
 
 # Load settings, create webdriver, login to reportronic...
 def main():
@@ -81,5 +89,7 @@ def main():
 
     test = get_worktime_cells(driver, 'JAMK', date='01.06.2015')
     print len(test)
+    input_worktime(driver, test[0], "7.5", "asdsaddsa")
+
 if __name__ == '__main__':
     main()
