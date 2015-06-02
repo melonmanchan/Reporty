@@ -78,10 +78,12 @@ def input_worktime(driver, element, duration, description):
 
 @click.command()
 @click.option('--date', default=time.strftime("%d.%m.%Y"), help='Work date. Default is today.')
-@click.option('--desc', default=None, help='Work description.')
-@click.option('--hours', default=None, help='Working hours.', type=click.FLOAT)
+@click.option('--desc', default=None, help='Work description. Defualt is empty.')
+@click.option('--hours', default=7.25, help='Working hours. Default is 7.25', type=click.FLOAT)
 def main(date, desc, hours):
     """Command line tool for interacting with Reportronic"""
+    print ("Reporting {hours} hours for day {date} with description: {desc}".format(hours=hours, date=date, desc=desc))
+
     print "Loading settings..."
     settings = load_settings_from_json()
     driver = init_driver()
