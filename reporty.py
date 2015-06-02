@@ -3,14 +3,17 @@
 __author__ = 'matti'
 
 import json
-from time import sleep
+from   time import sleep
 import time
+import re
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import  WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import click
+import datetime
 from selenium.webdriver.common.keys import Keys
 
 
@@ -76,22 +79,36 @@ def input_worktime(driver, element, duration, description):
     driver.find_element_by_name('prlWTEP$uwtWorkTime$_ctl1$ctlMnth$ctlWorkTimeTaskAtlasEditForm1$txtDescription').send_keys(description)
     driver.execute_script("__doPostBack('prlWTEP$uwtWorkTime$_ctl1$ctlMnth$ctlWorkTimeTaskAtlasEditForm1$rlbSave','') ")
 
+def check_valid_date(datestring):
+    try:
+        datetime.datetime.strptime(datestring, "%d.%m.%Y")
+        return True
+    except ValueError:
+        return False
+
 @click.command()
-@click.option('--date', default=time.strftime("%d.%m.%Y"), help='Work date. Default is today.')
+@click.option('--date', default=time.strftime("%d.%m.%Y"), help='Work date. Default is today. Format is dd.mm.yyyy')
 @click.option('--desc', default=None, help='Work description. Default is empty.')
 @click.option('--hours', default=7.25, help='Working hours. Default is 7.25', type=click.FLOAT)
 def main(date, desc, hours):
     """Command line tool for logging work with the Reportronic project management software"""
+
     print ("Reporting {hours} hours for day {date} with description: {desc}".format(hours=hours, date=date, desc=desc))
+
+    if not check_valid_date(date):
+        print "ERROR! Date must be in format dd.mm.yyyy"
+        exit(1)
 
     print "Loading settings..."
     settings = load_settings_from_json()
     driver = init_driver()
 
     driver.get(settings['url'])
+
     print "Logging in..."
     login_to_reportronic(settings['username'], settings['password'], driver)
     go_to_worktimes(driver)
+
     print "Logging work..."
     wait_until_element_available(driver, 10, By.CLASS_NAME, 'WTGCellWrapper')
     test = get_worktime_cells(driver, 'JAMK', date=date)
