@@ -87,9 +87,9 @@ def check_valid_date(datestring):
         return False
 
 @click.command()
-@click.option('--date', default=time.strftime("%d.%m.%Y"), help='Work date. Default is today. Format is dd.mm.yyyy')
-@click.option('--desc', default=None, help='Work description. Default is empty.')
-@click.option('--hours', default=7.25, help='Working hours. Default is 7.25', type=click.FLOAT)
+@click.option('-d', '--date', default=time.strftime("%d.%m.%Y"), help='Work date. Default is today. Format is dd.mm.yyyy')
+@click.option('-de', '--desc', default=None, help='Work description. Default is empty.')
+@click.option('-h', '--hours', default=7.25, help='Working hours. Default is 7.25', type=click.FLOAT)
 def main(date, desc, hours):
     """Command line tool for logging work with the Reportronic project management software"""
 
