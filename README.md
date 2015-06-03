@@ -10,7 +10,7 @@ npm install -g phantomjs && pip install -r requirements.txt
 ```
 Usage: reporty.py [OPTIONS]
 
-  Command line tool for interacting with Reportronic
+  Command line tool for logging work with the Reportronic project management software
 
 Options:
   --date TEXT    Work date. Default is today

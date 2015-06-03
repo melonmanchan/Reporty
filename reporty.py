@@ -5,7 +5,6 @@ __author__ = 'matti'
 import json
 from   time import sleep
 import time
-import re
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -35,8 +34,9 @@ def wait_until_element_available(driver, timeout, selectortype, selector):
         element = WebDriverWait(driver, timeout).until(
             EC.presence_of_element_located((selectortype, selector))
         )
+
     finally:
-        return
+        return element
 
 # Checks if element exists, returns it if it does.
 def check_if_element_available(driver, class_name):
@@ -72,12 +72,13 @@ def get_worktime_cells(driver, projectname, date=None):
 
 def input_worktime(driver, element, duration, description):
     element.click()
-    wait_until_element_available(driver, 10, By.NAME, 'prlWTEP$uwtWorkTime$_ctl1$ctlMnth$ctlWorkTimeTaskAtlasEditForm1$txtHours')
     sleep(0.3)
-    driver.find_element_by_name('prlWTEP$uwtWorkTime$_ctl1$ctlMnth$ctlWorkTimeTaskAtlasEditForm1$txtHours').send_keys(duration)
-    wait_until_element_available(driver, 10, By.NAME, 'prlWTEP$uwtWorkTime$_ctl1$ctlMnth$ctlWorkTimeTaskAtlasEditForm1$txtDescription')
-    sleep(0.3)
-    driver.find_element_by_name('prlWTEP$uwtWorkTime$_ctl1$ctlMnth$ctlWorkTimeTaskAtlasEditForm1$txtDescription').send_keys(description)
+    hourinput = wait_until_element_available(driver, 10, By.NAME, 'prlWTEP$uwtWorkTime$_ctl1$ctlMnth$ctlWorkTimeTaskAtlasEditForm1$txtHours')
+    #sleep(0.3)
+    hourinput.send_keys(duration)
+    descinput = wait_until_element_available(driver, 10, By.NAME, 'prlWTEP$uwtWorkTime$_ctl1$ctlMnth$ctlWorkTimeTaskAtlasEditForm1$txtDescription')
+    descinput.send_keys(description)
+    #driver.find_element_by_name('prlWTEP$uwtWorkTime$_ctl1$ctlMnth$ctlWorkTimeTaskAtlasEditForm1$txtDescription').send_keys(description)
     driver.execute_script("__doPostBack('prlWTEP$uwtWorkTime$_ctl1$ctlMnth$ctlWorkTimeTaskAtlasEditForm1$rlbSave','') ")
 
 def check_valid_date(datestring):
